@@ -7,8 +7,7 @@ namespace QuickSort
 	{
 		static void Main(string[] args)
 		{
-			//QuickSort(new int[] { 3, 4, 1, 10, 5, 8, 9 }, 0, 6);
-
+			// генерируем массив случайных чисел
 			Random rand = new Random();
 			int[] arr = new int[10000000];
 			for (int index = 0; index < arr.Length; index++)
@@ -16,13 +15,22 @@ namespace QuickSort
 				arr[index] = rand.Next(1, 100000);
 			}
 
+			// создаем таймер
 			Stopwatch stopwatch = new Stopwatch();
 
+			// стартуем таймер
 			stopwatch.Start();
+			// выполняем сортировку
 			QuickSort(arr, 0, arr.Length - 1);
+			// останавливаем таймер
 			stopwatch.Stop();
 
+			// выводит кол-во миллисекунд затраченных на сортировку
 			Console.WriteLine(stopwatch.ElapsedMilliseconds);
+
+			// сбрасываем значения таймера
+			stopwatch.Reset();
+
 			Console.ReadKey();
 		}
 

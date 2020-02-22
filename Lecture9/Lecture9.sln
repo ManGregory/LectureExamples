@@ -7,9 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SelectionSort", "SelectionS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SortingTests", "SortingTests\SortingTests.csproj", "{6F414103-2B52-4ED0-8373-177715756C39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BubbleSort", "BubbleSort\BubbleSort.csproj", "{206F371D-1376-4D03-B9BC-10BAF9B2CB60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BubbleSort", "BubbleSort\BubbleSort.csproj", "{206F371D-1376-4D03-B9BC-10BAF9B2CB60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickSort", "QuickSort\QuickSort.csproj", "{FA70AB4E-2698-40C6-B151-6A2EE3CF7380}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickSort", "QuickSort\QuickSort.csproj", "{FA70AB4E-2698-40C6-B151-6A2EE3CF7380}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineraSearch", "LineraSearch\LineraSearch.csproj", "{AB930640-6E25-4227-98A4-645C387C0572}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySearch", "BinarySearch\BinarySearch.csproj", "{C6B0E9AF-D808-4B06-85B5-33C6E971563C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{FA70AB4E-2698-40C6-B151-6A2EE3CF7380}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA70AB4E-2698-40C6-B151-6A2EE3CF7380}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA70AB4E-2698-40C6-B151-6A2EE3CF7380}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB930640-6E25-4227-98A4-645C387C0572}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB930640-6E25-4227-98A4-645C387C0572}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB930640-6E25-4227-98A4-645C387C0572}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB930640-6E25-4227-98A4-645C387C0572}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6B0E9AF-D808-4B06-85B5-33C6E971563C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6B0E9AF-D808-4B06-85B5-33C6E971563C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6B0E9AF-D808-4B06-85B5-33C6E971563C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6B0E9AF-D808-4B06-85B5-33C6E971563C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

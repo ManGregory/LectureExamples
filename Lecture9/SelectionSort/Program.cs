@@ -13,9 +13,11 @@ namespace SelectionSort
 
         public static void SelectionSort(int[] arr)
         {
+            // цикл по всему массиву
             for (int index = 0; index < arr.Length; index++)
             {
                 int minIndex = index;
+                // цикл по неотсортированной части массива
                 for (int searchIndex = minIndex + 1; searchIndex < arr.Length; searchIndex++)
                 {
                     if (arr[searchIndex] < arr[minIndex])
@@ -23,6 +25,7 @@ namespace SelectionSort
                         minIndex = searchIndex;
                     }
                 }
+                // ставим минимальный элемент на первую неотсортированную позицию
                 int curValue = arr[index];
                 arr[index] = arr[minIndex];
                 arr[minIndex] = curValue;
