@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ExcelExample
@@ -8,10 +9,11 @@ namespace ExcelExample
         static int rows = 5;
         static int cols = 5;
         static string[,] symbolTable = new string[rows, cols];
-        static int[,] evalTable = new int[rows, cols];
+        static int[,] calcTable = new int[rows, cols];
         static int focusedRow = 1;
         static int focusedCol = 1;
         const int cellWidth = 8;
+        const string header = "ABCDEFGHIJKLMOPQRSTUVWXYZ";
 
         static void Main(string[] args)
         {
@@ -49,6 +51,7 @@ namespace ExcelExample
 
                     string userInput = Console.ReadLine();
                     HandleUserInput(userInput);
+                    Calculate();
                 }
             }
         }
@@ -58,13 +61,65 @@ namespace ExcelExample
             bool isDigit = !string.IsNullOrWhiteSpace(userInput) && userInput.All(symbol => char.IsDigit(symbol));
             if (isDigit)
             {
-                evalTable[focusedRow - 1, focusedCol - 1] = int.Parse(userInput);
+                calcTable[focusedRow - 1, focusedCol - 1] = int.Parse(userInput);
                 symbolTable[focusedRow - 1, focusedCol - 1] = string.Empty;
             }
             else
             {
-                symbolTable[focusedRow - 1, focusedCol - 1] = userInput.Length > 8 ? userInput.Substring(0, 8) : userInput;
+                symbolTable[focusedRow - 1, focusedCol - 1] = userInput.Length > 8 ? userInput.Substring(0, 8) : userInput;                
             }
+        }
+
+        private static void Calculate()
+        {
+            for (int row = 0; row < rows; row++)
+            {
+                for (int col = 0; col < cols; col++)
+                {
+                    if (!string.IsNullOrEmpty(symbolTable[row, col]))
+                    {
+                        calcTable[row, col] = CalcCell(row, col);
+                    }
+                }
+            }
+        }
+
+        private static int CalcCell(int row, int col)
+        {
+            int val = calcTable[row, col];
+            string formula = symbolTable[row, col];
+            if (string.IsNullOrEmpty(formula)) return val;
+
+            return CalcFormula(formula);
+        }
+
+        static Dictionary<string, Func<int, int, int>> operations = new Dictionary<string, Func<int, int, int>>()
+        {
+            { "+", (num1, num2) => num1 + num2 },
+            { "-", (num1, num2) => num1 - num2 },
+            { "*", (num1, num2) => num1 * num2 },
+            { "/", (num1, num2) => num1 / num2 }
+        };
+
+        private static int CalcFormula(string formula)
+        {
+            if (formula.Length == 2)
+            {
+                int formulaRow = int.Parse(formula[1].ToString()) - 1;
+                int formulaCol = GetColumnIndex(formula[0]);
+
+                return CalcCell(formulaRow, formulaCol);
+            }
+            var operands = formula.Split(new string[] { "+", "-", "*", "/" }, StringSplitOptions.RemoveEmptyEntries);
+            int leftOperand = CalcFormula(operands[0]);
+            int righOperand = CalcFormula(operands[1]);
+            int result = operations[formula[2].ToString()](leftOperand, righOperand);
+            return result;
+        }
+
+        private static int GetColumnIndex(char column)
+        {
+            return header.IndexOf(column.ToString().ToUpper());
         }
 
         private static void ClearCurrentCell()
@@ -76,8 +131,7 @@ namespace ExcelExample
 
         private static void DrawTable(bool symbol)
         {
-            Console.Clear();
-            string header = "ABCDEFGHIJKLMOPQRSTUVWXYZ";
+            Console.Clear();            
 
             for (int rowIndex = 0; rowIndex <= rows; rowIndex++)
             {
@@ -94,7 +148,7 @@ namespace ExcelExample
                     }
                     if (rowIndex > 0 && colIndex > 0)
                     {
-                        Console.Write($"{(symbol ? symbolTable[rowIndex - 1, colIndex - 1] : evalTable[rowIndex - 1, colIndex - 1].ToString()),cellWidth}");
+                        Console.Write($"{(symbol ? symbolTable[rowIndex - 1, colIndex - 1] : calcTable[rowIndex - 1, colIndex - 1].ToString()),cellWidth}");
                     }
                     if (colIndex > 0 && rowIndex == 0)
                     {
