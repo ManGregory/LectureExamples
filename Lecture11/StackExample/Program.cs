@@ -15,8 +15,8 @@ namespace StackExample
             {
                 if (symbol == "+")
                 {
-                    int num1 = stack.Pop();
                     int num2 = stack.Pop();
+                    int num1 = stack.Pop();
                     int res = num1 + num2;
                     stack.Push(res);
                 }

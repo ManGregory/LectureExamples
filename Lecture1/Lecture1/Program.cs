@@ -5,232 +5,396 @@ namespace Lecture1
 {
     class Program
     {
+        public static int colNum = 7;
+        public static int rowNum = 7;
+        public static int numberOfBomb = 10;
+
+        public static string userIcon = "P";
+        public static string bombIcon = "@";
+        public static int complexity = 2;
+        public static string HiddenField = "*";
+
+
         static void Main(string[] args)
         {
-            bool BoolVariableForTryCatch = true;
+            GameMenu();
+        }
 
-            do
+
+        public static void GameMenu()
+        {
+
+            while (true)
             {
-                int summary = 0;
-                int difference = 0;
-                int multiply = 1;
-                int division = 1;
-                int sum = 0;
-                int mul = 1;
-                int QuantityOfElements = 0;
 
-                Console.WriteLine();
-                Console.WriteLine();
+                Console.WriteLine("1. Играть");
+                Console.WriteLine("2. Настройки");
+                Console.WriteLine("3. О программе");
+                Console.WriteLine("4. Выход");
 
-                Console.WriteLine("Возможные операции: +, -, *, /, sum, mul");
-                Console.WriteLine("Введите желаемую операцию: ");
-                string operation = Console.ReadLine();
 
-                if (operation == "+" || operation == "-" || operation == "*" || operation == "/")
+                string userNum = Console.ReadLine();
+
+                if (int.TryParse(userNum, out int userChoice))
                 {
-                    do
+                    if (userChoice == 1)
                     {
+                        GameSapper();
+                    }
+                    else if (userChoice == 2)
+                    {
+                        Settings();
+                    }
+                    else if (userChoice == 3)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Правила игры: Вам необходимо дойти до выхода, минуя мины");
+                    }
+                    else if (userChoice == 4)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Попробуйте снова!");
+                    }
+                }
+            }
+        }
 
-                        try
-                        {
-                            BoolVariableForTryCatch = true;
-                            Console.WriteLine();
+        public static void GameSapper()
+        {
+            GameMode();
+            Gameplay();
+        }
 
-                            Console.WriteLine("Введите первое число:");
-                            int number1 = int.Parse(Console.ReadLine());
-                            Console.WriteLine("Введите второе число:");
-                            int number2 = int.Parse(Console.ReadLine());
+        public static void Settings()
+        {
+            string difficult;
 
-                            switch (operation)
-                            {
-
-                                case "+":
-
-                                    summary = number1 + number2;
-                                    Console.WriteLine($"Сумма чисел - {summary}");
-
-                                    break;
-
-                                case "-":
-
-                                    difference = number1 - number2;
-                                    Console.WriteLine($"Разница чисел - {difference}");
-
-                                    break;
-
-                                case "*":
-
-                                    multiply = number1 * number2;
-                                    Console.WriteLine($"Произведение чисел - {multiply}");
-
-                                    break;
-
-                                case "/":
-
-                                    division = number1 / number2;
-                                    Console.WriteLine($"Частное чисел - {division}");
-
-                                    break;
-                            }
-                        }
-                        catch (FormatException)
-                        {
-                            Console.BackgroundColor = ConsoleColor.Yellow;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.WriteLine("Скорее всего, вы ввели не число, попробуйте ещё раз ");
-                            Console.ResetColor();
-                            Console.WriteLine();
-
-                            BoolVariableForTryCatch = false;
-                        }
-                        catch (DivideByZeroException)
-                        {
-                            Console.BackgroundColor = ConsoleColor.Yellow;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.WriteLine("К сожалению, делить на ноль нельзя :( ");
-                            Console.ResetColor();
-                            Console.WriteLine();
-                            BoolVariableForTryCatch = false;
-                        }
-
-
-                    } while (BoolVariableForTryCatch == false);
+            while (true)
+            {
+                Console.Clear();
+                if (complexity == 1)
+                {
+                    difficult = "Easy";
+                }
+                else if (complexity == 2)
+                {
+                    difficult = "Normal";
+                }
+                else
+                {
+                    difficult = "Hard";
                 }
 
-                else if (operation == "sum" || operation == "mul")
+
+                Console.WriteLine($"1. Иконка игрока: {userIcon}");
+                Console.WriteLine($"2: Иконка бомбы: {bombIcon}");
+                Console.WriteLine($"3: Сложность игры: {difficult}");
+                Console.WriteLine("4: Назад");
+
+                string userNum = Console.ReadLine();
+
+                if (int.TryParse(userNum, out int userChoice))
                 {
-
-                    do
+                    if (userChoice == 1)
                     {
-                        BoolVariableForTryCatch = true;
-
-                        try
-                        {
-                            BoolVariableForTryCatch = true;
-                            Console.WriteLine("Введите количество элементов в массиве: ");
-
-                            int numbersForOperation = int.Parse(Console.ReadLine());
-                            int[] OperationArray = new int[numbersForOperation];
-
-                            for (int OperationIterator = 0; OperationIterator < OperationArray.Length; OperationIterator++)
-                            {
-                                Console.Write($"Введите значение {OperationIterator + 1} элемента: ");
-
-
-                                int ElementsCount = int.Parse(Console.ReadLine());
-                                OperationArray[OperationIterator] = ElementsCount;
-                            }
-
-                            bool SumMul = true;
-                            switch (operation)
-                            {
-
-                                case "sum":
-                                    do //Если пользователь вводит отрицательное количество элементов для расчёта суммы, программа снова просит ввести кол-во элементов
-                                    {
-                                        SumMul = true;
-                                        Console.WriteLine($"Введите количество элементов для расчёта суммы");
-                                        QuantityOfElements = int.Parse(Console.ReadLine());
-
-                                        if (QuantityOfElements <= 0)
-                                        {
-                                            Console.BackgroundColor = ConsoleColor.Yellow;
-                                            Console.ForegroundColor = ConsoleColor.Black;
-                                            Console.WriteLine("количество элементов для расчёта суммы не может быть меньше нуля");
-                                            Console.ResetColor();
-                                            Console.WriteLine();
-                                            Console.WriteLine();
-                                            SumMul = false;
-                                        }
-
-                                    } while (SumMul == false);
-
-                                    for (int sumIterator = 0; sumIterator < QuantityOfElements; sumIterator++)
-                                    {
-                                        sum += OperationArray[sumIterator];
-                                    }
-
-                                    Console.WriteLine($"Сумма элементов массива - {sum}");
-                                    break;
-
-                                case "mul":
-                                    {
-
-                                        do
-                                        {
-                                            SumMul = true;
-
-                                            Console.WriteLine($"Введите количество элементов для расчёта произведения");
-                                            QuantityOfElements = int.Parse(Console.ReadLine());
-
-                                            if (QuantityOfElements <= 0)
-                                            {
-                                                Console.BackgroundColor = ConsoleColor.Yellow;
-                                                Console.ForegroundColor = ConsoleColor.Black;
-                                                Console.WriteLine("количество элементов для расчёта произведения не может быть меньше нуля");
-                                                Console.ResetColor();
-                                                Console.WriteLine();
-                                                Console.WriteLine();
-                                                SumMul = false;
-                                            }
-
-                                        } while (SumMul == false);
-
-                                        for (int mulIterator = 0; mulIterator < QuantityOfElements; mulIterator++)
-                                        {
-                                            mul *= OperationArray[mulIterator];
-                                        }
-
-                                        Console.WriteLine($"Произведение элементов массива - {mul}");
-                                        break;
-                                    }
-                            }
-                        }
-
-                        catch (OverflowException)
-                        {
-                            Console.BackgroundColor = ConsoleColor.Yellow;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.WriteLine("Количество элементов в массиве не может быть отрицательным/ настолько большим ");
-                            Console.ResetColor();
-                            Console.WriteLine();
-                            BoolVariableForTryCatch = false;
-                        }
-
-                        catch (FormatException)
-                        {
-                            Console.BackgroundColor = ConsoleColor.Yellow;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.WriteLine("Скорее всего, вы ввели не число, попробуйте ещё раз ");
-                            Console.ResetColor();
-                            Console.WriteLine();
-                            BoolVariableForTryCatch = false;
-                        }
-
-                        catch (IndexOutOfRangeException)
-                        {
-                            Console.BackgroundColor = ConsoleColor.Yellow;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.WriteLine("Количество элементов для расчёта не может быть больше, чем количество элементов в массиве ");
-                            Console.ResetColor();
-                            Console.WriteLine();
-                            BoolVariableForTryCatch = false;
-                        }
-
-                    } while (BoolVariableForTryCatch == false);
+                        ChangeIcon();
+                    }
+                    else if (userChoice == 2)
+                    {
+                        ChangeIcon();
+                    }
+                    else if (userChoice == 3)
+                    {
+                        ChangeComplexity();
+                    }
+                    else if (userChoice == 4)
+                    {
+                        Console.Clear();
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Попробуйте снова!");
+                    }
 
                 }
-                Console.WriteLine("Нажмите Esc, если хотите выйти; чтоб продолжить - нажмите любую другую клавишу");
+
+            }
+        }
+
+        public static void ChangeIcon()
+        {
+
+
+            while (true)
+            {
+                Console.WriteLine("Введите новую иконку игрока(не больше одного символа):");
+                userIcon = Console.ReadLine();
+
+                if (userIcon.Length <= 1)
+                {
+                    break;
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("Попробуйте снова");
+                }
+            }
+
+        }
+
+        public static void ChangeComplexity()
+        {
+
+            while (true)
+            {
+                Console.WriteLine("Выберите сложность:");
+                Console.WriteLine("1.Easy");
+                Console.WriteLine("2.Normal");
+                Console.WriteLine("3.Hard");
+
+                string userNum = Console.ReadLine();
+
+                bool validChoice = userNum == "1" || userNum == "2" || userNum == "3";
+
+                if (int.TryParse(userNum, out int userChoice) && validChoice)
+                {
+                    complexity = userChoice;
+                    break;
+                }
+            }
+        }
+
+        public static void GameMode()
+        {
+            if (complexity == 1)
+            {
+                rowNum = 5;
+                colNum = 5;
+
+                numberOfBomb = 5;
+            }
+            else if (complexity == 2)
+            {
+                rowNum = 7;
+                colNum = 7;
+                numberOfBomb = 10;
+            }
+            else
+            {
+                rowNum = 10;
+                colNum = 10;
+                numberOfBomb = 25;
+            }
+        }
+
+
+
+        public static void Gameplay()
+        {
+            int counter = 0;
+
+            const string EntranceOrExit = "=";
+            int currentPosExit = RandomPosition(rowNum);
+
+
+            string[,] gameField = new string[rowNum, colNum];
+
+
+            int currentPosUserCol = 0;
+            int currentPosUserRow = RandomPosition(rowNum);
+
+
+
+            int[] rowBombs = new int[numberOfBomb];
+            int[] colBombs = new int[numberOfBomb];
+
+            DrawField(gameField, ref counter, rowBombs, colBombs);
+
+            gameField[currentPosExit, gameField.GetLength(1) - 1] = EntranceOrExit;
+            gameField[currentPosUserRow, currentPosUserCol] = userIcon;
+
+
+
+            SetBombPosition(rowBombs, colBombs, currentPosExit);
+
+
+            while (true)
+            {
+
+                DrawField(gameField, ref counter, rowBombs, colBombs);
+
                 var key = Console.ReadKey();
 
                 if (key.Key == ConsoleKey.Escape)
                 {
-                    // прерываем бесконечный цикл
                     break;
                 }
-                Console.Clear();
-            } while (true);
+
+                else if (key.Key == ConsoleKey.LeftArrow)
+                {
+                    if (currentPosUserCol > 0)
+                    {
+                        gameField[currentPosUserRow, currentPosUserCol] = HiddenField;
+                        currentPosUserCol -= 1;
+                        gameField[currentPosUserRow, currentPosUserCol] = userIcon;
+                    }
+                }
+
+                else if (key.Key == ConsoleKey.RightArrow)
+                {
+                    if (currentPosUserCol < gameField.GetLength(1) - 1)
+                    {
+                        gameField[currentPosUserRow, currentPosUserCol] = HiddenField;
+                        currentPosUserCol += 1;
+                        gameField[currentPosUserRow, currentPosUserCol] = userIcon;
+                    }
+                }
+
+                else if (key.Key == ConsoleKey.UpArrow)
+                {
+                    if (currentPosUserRow > 0)
+                    {
+                        gameField[currentPosUserRow, currentPosUserCol] = HiddenField;
+                        currentPosUserRow -= 1;
+                        gameField[currentPosUserRow, currentPosUserCol] = userIcon;
+
+                    }
+                }
+                else if (key.Key == ConsoleKey.DownArrow)
+                {
+                    if (currentPosUserRow < gameField.GetLength(0) - 1)
+                    {
+                        gameField[currentPosUserRow, currentPosUserCol] = HiddenField;
+                        currentPosUserRow += 1;
+                        gameField[currentPosUserRow, currentPosUserCol] = userIcon;
+                    }
+
+                }
+
+
+                if (currentPosUserCol == gameField.GetLength(1) - 1 && currentPosUserRow == currentPosExit)
+                {
+                    Console.WriteLine("Победа!!!");
+                    DrawField(gameField, ref counter, rowBombs, colBombs);
+                    break;
+                }
+
+
+
+
+
+                if (IsPlayerLooser(currentPosUserRow, currentPosUserCol, rowBombs, colBombs) == 1)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Поражение!!!!\n\n");
+                    counter++;
+
+                    DrawField(gameField, ref counter, rowBombs, colBombs);
+
+                    break;
+                }
+
+            }
 
         }
+
+
+        public static int RandomPosition(int num)
+        {
+            int rand = new Random().Next(0, num - 1);
+            return rand;
+        }
+
+        public static void SetBombPosition(int[] rowBombs, int[] colBombs, int exit)
+        {
+            var rand = new Random();
+
+            int index = 0;
+            int randomRow;
+            int randomCol;
+            int total;
+
+            while (index < rowBombs.Length)
+            {
+                total = 0;
+                randomRow = rand.Next(0, rowNum);
+                randomCol = rand.Next(0, colNum);
+
+                for (int counter = 0; counter < rowBombs.Length; counter++)
+                {
+                    if (randomRow == rowBombs[counter] && randomRow != exit && randomCol == rowBombs[counter])
+                    {
+                        total += 1;
+                    }
+                }
+
+                if (total == 0)
+                {
+                    rowBombs[index] = randomRow;
+                    colBombs[index] = randomCol;
+                    index++;
+                }
+
+            }
+        }
+
+        public static void DrawField(string[,] gameField, ref int counter, int[] rowBombs, int[] colBombs)
+        {
+
+            if (counter == 0)
+            {
+                for (int rowIndex = 0; rowIndex < gameField.GetLength(0); rowIndex++)
+                {
+                    for (int colIndex = 0; colIndex < gameField.GetLength(1); colIndex++)
+                    {
+                        gameField[rowIndex, colIndex] = HiddenField;
+                    }
+                }
+                counter++;
+            }
+
+
+            Console.Clear();
+
+            if (counter == 2)
+            {
+                for (int index = 0; index < rowBombs.Length; index++)
+                {
+                    gameField[rowBombs[index], colBombs[index]] = bombIcon;
+                }
+            }
+
+
+            for (int rowIndex = 0; rowIndex < gameField.GetLength(0); rowIndex++)
+            {
+                Console.WriteLine();
+                for (int colIndex = 0; colIndex < gameField.GetLength(1); colIndex++)
+                {
+                    Console.Write($"{gameField[rowIndex, colIndex],5}");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public static int IsPlayerLooser(int currentPosUserRow, int currentPosUserCol, int[] rowBombs, int[] colBombs)
+        {
+            int looser = 0;
+            for (int index = 0; index < rowBombs.Length; index++)
+            {
+                if (currentPosUserRow == rowBombs[index] & currentPosUserCol == colBombs[index])
+                {
+                    looser += 1;
+                }
+            }
+
+            return looser;
+        }
+
     }
 }
