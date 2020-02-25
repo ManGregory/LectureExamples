@@ -2,6 +2,9 @@
 
 namespace StringComparison
 {
+    /*
+      Пример сравнения строк используя разные методы
+     */
     class Program
     {
         static void Main(string[] args)

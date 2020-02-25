@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 
 namespace Example4
 {
@@ -8,11 +10,38 @@ namespace Example4
         Вывести на экран слова которые заканчиваются на букву “я”
      */
     class Program
-    {
-        
+    {        
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            // путь к файлу
+            // здесь нужно быть аккуратным чтобы для доступа к файлу не требовались права администратора
+            string fileName = @"D:\1.txt";
+
+            // считываем файл построчно
+            // как результат получаем массив строк, каждый элемент которой это строка исходного файла
+            // вторым параметром мы указываем кодировку - Encoding.UTF8
+            // соответственно нужно файл сохранить в этой кодировке
+            string[] fileContent = File.ReadAllLines(fileName, Encoding.UTF8);
+            // для считывания файла целиком в одну строку можно использовать следующий метод
+            // в отличии от метода ReadAllLines вы получите одну строку в которой перенос строки будет записан как \r\n
+            // string wholeFileContent = File.ReadAllText(fileName, Encoding.UTF8);
+
+            // цикл по всем строкам в файле
+            foreach (string line in fileContent)
+            {
+                // разбиваем строку на слова, в качестве разделителя используем пробел
+                // второй параметр указывает что после разбиения на слова нужно удалить из результирующего массива пустые строки
+                var words = line.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                // цикл по всем словам в строке
+                foreach (var word in words)
+                {
+                    // проверяем что слово начинается с буквы "а" и заканчивается на "ь"
+                    if (word.StartsWith("а") && word.EndsWith("ь"))
+                    {
+                        Console.WriteLine(word);
+                    }
+                }
+            }
         }
     }
 }

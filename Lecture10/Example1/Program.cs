@@ -9,7 +9,12 @@ namespace Example1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            // для escape-последовательности используется символ слеша 
+            // \t - табуляция
+            // \r\n - перенос строки
+            string text = "Column1\tColumn2\tColumn3\r\nRow1\tRow2\tRow3\a";
+
+            Console.WriteLine(text);
         }
     }
 }
