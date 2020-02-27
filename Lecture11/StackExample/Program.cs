@@ -5,28 +5,13 @@ namespace StackExample
 {
     class Program
     {
+        /*
+         * Реализация стековой машины или вычиселния выражений записанных в обратной польской нотации
+         */
         static void Main(string[] args)
         {
-            // 3 4 +
-            var stack = new Stack<int>();
-            string expression = "6 3 4 + 4 + +";
-            var symbols = expression.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-            foreach (var symbol in symbols)
-            {
-                if (symbol == "+")
-                {
-                    int num2 = stack.Pop();
-                    int num1 = stack.Pop();
-                    int res = num1 + num2;
-                    stack.Push(res);
-                }
-                else
-                {
-                    stack.Push(int.Parse(symbol));
-                }
-            }
-
-            Console.WriteLine(stack.Pop());
+            // 8 4 2 * - "8 - 4 * 2"
+            string expression = "3 4 +";
         }
     }
 }

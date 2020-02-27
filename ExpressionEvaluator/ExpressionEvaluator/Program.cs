@@ -8,12 +8,28 @@ namespace ExpressionEvaluator
     {
         static void Main(string[] args)
         {
-            string infix = "(3 + (4 * 2) / (1 - 5)) / (25 - 143)";
+            //string infix = "(3 + (4 * 2) / (1 - 5)) / (25 - 143)";            
+           
+            while (true)
+            {
+                Console.Write("Введите арифметическое выражение: ");
+                string infix = Console.ReadLine();
+                double result = Evaluate(ConvertToPostfix(infix));
+                Console.WriteLine($"Результат: {result}");
+                Console.WriteLine("\r\nНажмите любую клавишу для продолжения или <ESC> для выхода");
+
+                var key = Console.ReadKey();
+                if (key.Key == ConsoleKey.Escape) break;
+            }
+        }
+
+        private static string ConvertToPostfix(string expression)
+        {
             StringBuilder postfixSB = new StringBuilder();
 
             Stack<string> stack = new Stack<string>();
             string num = string.Empty;
-            foreach (char symbol in infix)
+            foreach (char symbol in expression)
             {
                 if (char.IsWhiteSpace(symbol)) continue;
 
@@ -47,11 +63,11 @@ namespace ExpressionEvaluator
                 }
 
                 if (IsOperation(symbol))
-                {                    
+                {
                     int curSymbolPriority = GetSymbolPriority(symbol);
                     while (stack.Count != 0 && IsOperation(stack.Peek()[0]) && GetSymbolPriority(stack.Peek()[0]) <= curSymbolPriority)
                     {
-                        postfixSB.Append($"{stack.Pop()} ");                        
+                        postfixSB.Append($"{stack.Pop()} ");
                     }
                     stack.Push(symbol.ToString());
                 }
@@ -65,9 +81,7 @@ namespace ExpressionEvaluator
             {
                 postfixSB.Append($"{stack.Pop()} ");
             }
-
-            double result = Evaluate(postfixSB.ToString());
-            double result2 = (3.0 + (4.0 * 2) / (1.0 - 5)) / (25.0 - 143);
+            return postfixSB.ToString();
         }
 
         private static double Evaluate(string expression)
