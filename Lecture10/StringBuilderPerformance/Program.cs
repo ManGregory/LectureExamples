@@ -56,8 +56,8 @@ namespace StringBuilderPerformance
             // выводим на экран результатов замеров разныех способов конкатенации
             // в первую очередь проверяем что получили правильный результат
             Console.WriteLine($"Строки полученные обоими методами равны concatText == concatTextSb = {concatText == concatTextSb}");
-            Console.WriteLine($"Конкатенация строк строка + строка - {concatTime/1000} c");
-            Console.WriteLine($"Конкатенация строк с использованием StringBuilder - {sbConcatTime/1000} c");            
+            Console.WriteLine($"Конкатенация строк строка + строка - {concatTime/1000.0} c");
+            Console.WriteLine($"Конкатенация строк с использованием StringBuilder - {sbConcatTime/1000.0} c");            
         }
     }
 }
