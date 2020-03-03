@@ -20,7 +20,7 @@ namespace IsValidDate
         /// <returns>True - если дата валидна, иначе false</returns>
         public static bool IsValidDate(string date)
         {
-            /*if (string.IsNullOrWhiteSpace(date)) return false;
+            if (string.IsNullOrWhiteSpace(date)) return false;
 
             var parts = date.Split(".", StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 3) return false;
@@ -38,51 +38,7 @@ namespace IsValidDate
             int[] daysInMonths = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
             int maxDaysInMonth = daysInMonths[months - 1] + (isLeapYear && months == 2 ? 1 : 0);
 
-            return days <= maxDaysInMonth;*/
-
-            if (date.IndexOf(".") != 2 && date.LastIndexOf(".") != 5)
-            {
-                return false;
-            }
-
-            string[] dayMonthYear = date.Split('.', StringSplitOptions.RemoveEmptyEntries);
-
-            int day, month, year;
-
-            bool validDay = int.TryParse(dayMonthYear[0], out day);
-            bool validMonth = int.TryParse(dayMonthYear[1], out month);
-            bool validYear = int.TryParse(dayMonthYear[2], out year);
-
-            Console.WriteLine(year);
-
-            if (!(validDay && validMonth))
-            {
-                return false;
-            }
-
-            bool daysInMonth31 = month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12;
-            bool daysInMonth30 = month == 4 || month == 6 || month == 9 || month == 11;
-            bool isYearLeap = (year % 4 == 0) || (year % 400 == 0 && year % 100 != 0);
-
-
-            if (daysInMonth31 && 1 <= day && day <= 31)
-            {
-                return true;
-            }
-            else if (daysInMonth30 && 1 <= day && day <= 30)
-            {
-                return true;
-            }
-            else if (isYearLeap && 1 <= day && day <= 29 && month == 2)
-            {
-                return true;
-            }
-            else if (month == 2 && 1 <= day && day <= 28)
-            {
-                return true;
-            }
-
-            return false;
+            return days <= maxDaysInMonth;
         }
     }
 }
