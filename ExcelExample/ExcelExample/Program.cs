@@ -6,14 +6,14 @@ namespace ExcelExample
 {
     class Program
     {
-        static int rows = 5;
-        static int cols = 5;
+        static int rows = 8;
+        static int cols = 8;
         static string[,] symbolTable = new string[rows, cols];
-        static int[,] calcTable = new int[rows, cols];
+        static double[,] calcTable = new double[rows, cols];
         static int focusedRow = 1;
         static int focusedCol = 1;
-        const int cellWidth = 8;
-        const string header = "ABCDEFGHIJKLMOPQRSTUVWXYZ";
+        const int CellWidth = 10;
+        const string Header = "ABCDEFGHIJKLMOPQRSTUVWXYZ";
 
         static void Main(string[] args)
         {
@@ -47,7 +47,7 @@ namespace ExcelExample
                 }
                 else if (key.Key == ConsoleKey.Enter)
                 {
-                    ClearCurrentCell();
+                    ShowUserInput();
 
                     string userInput = Console.ReadLine();
                     HandleUserInput(userInput);
@@ -56,17 +56,25 @@ namespace ExcelExample
             }
         }
 
+        private static void ShowUserInput()
+        {
+            Console.SetCursorPosition(0, rows + 2);
+            Console.Write($"Enter value or formula for cell {Header[focusedCol - 1]}{focusedRow}: ");
+        }
+
         private static void HandleUserInput(string userInput)
         {
-            bool isDigit = !string.IsNullOrWhiteSpace(userInput) && userInput.All(symbol => char.IsDigit(symbol));
+            if (string.IsNullOrWhiteSpace(userInput)) return;
+
+            bool isDigit = userInput.All(symbol => char.IsDigit(symbol));
             if (isDigit)
             {
-                calcTable[focusedRow - 1, focusedCol - 1] = int.Parse(userInput);
+                calcTable[focusedRow - 1, focusedCol - 1] = double.Parse(userInput);
                 symbolTable[focusedRow - 1, focusedCol - 1] = string.Empty;
             }
             else
             {
-                symbolTable[focusedRow - 1, focusedCol - 1] = userInput.Length > 8 ? userInput.Substring(0, 8) : userInput;                
+                symbolTable[focusedRow - 1, focusedCol - 1] = userInput;                
             }
         }
 
@@ -84,16 +92,16 @@ namespace ExcelExample
             }
         }
 
-        private static int CalcCell(int row, int col)
+        private static double CalcCell(int row, int col)
         {
-            int val = calcTable[row, col];
+            double val = calcTable[row, col];
             string formula = symbolTable[row, col];
             if (string.IsNullOrEmpty(formula)) return val;
 
             return CalcFormula(formula);
         }
 
-        static Dictionary<string, Func<int, int, int>> operations = new Dictionary<string, Func<int, int, int>>()
+        static Dictionary<string, Func<double, double, double>> operations = new Dictionary<string, Func<double, double, double>>()
         {
             { "+", (num1, num2) => num1 + num2 },
             { "-", (num1, num2) => num1 - num2 },
@@ -101,7 +109,7 @@ namespace ExcelExample
             { "/", (num1, num2) => num1 / num2 }
         };
 
-        private static int CalcFormula(string formula)
+        private static double CalcFormula(string formula)
         {
             if (formula.Length == 2)
             {
@@ -111,53 +119,60 @@ namespace ExcelExample
                 return CalcCell(formulaRow, formulaCol);
             }
             var operands = formula.Split(new string[] { "+", "-", "*", "/" }, StringSplitOptions.RemoveEmptyEntries);
-            int leftOperand = CalcFormula(operands[0]);
-            int righOperand = CalcFormula(operands[1]);
-            int result = operations[formula[2].ToString()](leftOperand, righOperand);
+            double leftOperand = CalcFormula(operands[0]);
+            double righOperand = CalcFormula(operands[1]);
+            double result = operations[formula[2].ToString()](leftOperand, righOperand);
             return result;
         }
 
         private static int GetColumnIndex(char column)
         {
-            return header.IndexOf(column.ToString().ToUpper());
+            return Header.IndexOf(column.ToString().ToUpper());
         }
 
-        private static void ClearCurrentCell()
-        {
-            Console.SetCursorPosition(focusedCol * cellWidth, focusedRow);
-            Console.Write("        ");
-            Console.SetCursorPosition(focusedCol * cellWidth + 1, focusedRow);
-        }
-
-        private static void DrawTable(bool symbol)
+        private static void DrawTable(bool isSymbol)
         {
             Console.Clear();            
 
-            for (int rowIndex = 0; rowIndex <= rows; rowIndex++)
+            for (int row = 0; row <= rows; row++)
             {
-                if (rowIndex > 0)
+                if (row > 0)
                 {
-                    Console.Write($"{rowIndex, cellWidth}");
+                    Console.Write($"{row, CellWidth}");
                 }
-                for (int colIndex = 0; colIndex <= cols; colIndex++)
+                for (int col = 0; col <= cols; col++)
                 {
-                    if (colIndex == 0 && rowIndex == 0)
+                    if (col == 0 && row == 0)
                     {
                         char space = ' ';
-                        Console.Write($"{space,cellWidth}");
+                        Console.Write($"{space,CellWidth}");
                     }
-                    if (rowIndex > 0 && colIndex > 0)
+                    if (row > 0 && col > 0)
                     {
-                        Console.Write($"{(symbol ? symbolTable[rowIndex - 1, colIndex - 1] : calcTable[rowIndex - 1, colIndex - 1].ToString()),cellWidth}");
+                        Console.Write($"{GetShowValue(row, col, isSymbol),CellWidth}");
                     }
-                    if (colIndex > 0 && rowIndex == 0)
+                    if (col > 0 && row == 0)
                     {
-                        Console.Write($"{header[colIndex - 1], cellWidth}");
+                        Console.Write($"{Header[col - 1], CellWidth}");
                     }
                 }
                 Console.WriteLine();
             }
-            Console.SetCursorPosition(focusedCol * cellWidth + cellWidth - 1, focusedRow);
+            Console.WriteLine();
+            Console.WriteLine($"{Header[focusedCol - 1]}{focusedRow}: {GetShowValue(focusedRow, focusedCol, isSymbol, false)}");
+            Console.SetCursorPosition(focusedCol * CellWidth + CellWidth - 1, focusedRow);
+        }
+
+        private static string GetShowValue(int row, int col, bool isSymbol, bool truncate = true)
+        {
+            string value = isSymbol ? symbolTable[row - 1, col - 1] : calcTable[row - 1, col - 1].ToString();
+            value = value ?? string.Empty;
+
+            if (truncate && value.Length + 1 > CellWidth)
+            {
+                value = $"{value.Substring(0, CellWidth - 4)}...";
+            }
+            return value;
         }
     }
 }
