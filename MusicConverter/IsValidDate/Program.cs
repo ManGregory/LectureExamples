@@ -27,7 +27,7 @@ namespace IsValidDate
 
             if (parts[0].Length != 2 || parts[1].Length != 2 || parts[2].Length != 4) return false;
 
-            bool allDigits = int.TryParse(parts[0], out int days) & 
+            bool allDigits = int.TryParse(parts[0], out int days) &
                 int.TryParse(parts[1], out int months) &
                 int.TryParse(parts[2], out int years);
 
