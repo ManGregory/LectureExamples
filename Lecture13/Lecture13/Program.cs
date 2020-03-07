@@ -19,10 +19,44 @@ namespace Lecture13
             /*int sum = SumAndMul(10, 11, out int mul);
             Console.WriteLine($"{sum}, {mul}");
 
-            Console.Write(TryParse("15", out int num));*/
+            Console.Write(TryParse("15", out int num));
             Console.WriteLine(SuperSum(1, 2));
             Console.WriteLine(SuperSum(1, 2, 3, 4));
-            Console.WriteLine(SuperSum());
+            Console.WriteLine(SuperSum());*/
+
+            Console.WriteLine("LoopPrint(3)");
+            LoopPrint(3);
+
+            Console.WriteLine();
+            Console.WriteLine("RecursivePrint(1, 3)");            
+            RecursivePrint(1, 3);
+
+            Console.WriteLine(Factorial(5));
+        }
+
+        public static int Factorial(int num)
+        {
+            if (num == 1) return num;
+
+            return num * Factorial(num - 1);
+        }
+
+        private static void LoopPrint(int times)
+        {
+            int iterNum = 1;
+            while (iterNum <= times)
+            {
+                Console.WriteLine($"Print {iterNum}");
+                iterNum++;
+            }
+        }
+
+        private static void RecursivePrint(int iterNum, int times)
+        {
+            if (iterNum > times) return;
+
+            Console.WriteLine($"Print {iterNum}");
+            RecursivePrint(iterNum + 1, times);
         }
 
         // метод с двумя целочисленными параметрами и возвращаемым целочисленным значением

@@ -14,6 +14,13 @@ namespace ExcelExample
         static int focusedCol = 1;
         const int CellWidth = 10;
         const string Header = "ABCDEFGHIJKLMOPQRSTUVWXYZ";
+        static Dictionary<string, Func<double, double, double>> operations = new Dictionary<string, Func<double, double, double>>()
+        {
+            { "+", (num1, num2) => num1 + num2 },
+            { "-", (num1, num2) => num1 - num2 },
+            { "*", (num1, num2) => num1 * num2 },
+            { "/", (num1, num2) => num1 / num2 }
+        };
 
         static void Main(string[] args)
         {
@@ -66,10 +73,10 @@ namespace ExcelExample
         {
             if (string.IsNullOrWhiteSpace(userInput)) return;
 
-            bool isDigit = userInput.All(symbol => char.IsDigit(symbol));
+            bool isDigit = double.TryParse(userInput, out double value);
             if (isDigit)
             {
-                calcTable[focusedRow - 1, focusedCol - 1] = double.Parse(userInput);
+                calcTable[focusedRow - 1, focusedCol - 1] = value;
                 symbolTable[focusedRow - 1, focusedCol - 1] = string.Empty;
             }
             else
@@ -77,6 +84,8 @@ namespace ExcelExample
                 symbolTable[focusedRow - 1, focusedCol - 1] = userInput;                
             }
         }
+
+        static List<string> evaluated = new List<string>();
 
         private static void Calculate()
         {
@@ -86,6 +95,7 @@ namespace ExcelExample
                 {
                     if (!string.IsNullOrEmpty(symbolTable[row, col]))
                     {
+                        evaluated.Clear();
                         calcTable[row, col] = CalcCell(row, col);
                     }
                 }
@@ -94,20 +104,16 @@ namespace ExcelExample
 
         private static double CalcCell(int row, int col)
         {
+            string item = Header[col] + row.ToString();
+            if (evaluated.Contains(item)) return 0;
+
+            evaluated.Add(item);
             double val = calcTable[row, col];
             string formula = symbolTable[row, col];
             if (string.IsNullOrEmpty(formula)) return val;
 
             return CalcFormula(formula);
         }
-
-        static Dictionary<string, Func<double, double, double>> operations = new Dictionary<string, Func<double, double, double>>()
-        {
-            { "+", (num1, num2) => num1 + num2 },
-            { "-", (num1, num2) => num1 - num2 },
-            { "*", (num1, num2) => num1 * num2 },
-            { "/", (num1, num2) => num1 / num2 }
-        };
 
         private static double CalcFormula(string formula)
         {
