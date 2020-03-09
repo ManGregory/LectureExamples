@@ -3,81 +3,35 @@ using System.Collections.Generic;
 
 namespace Example1
 {
-    public enum Sex
+    // статический класс может содержать только статические методы и поля
+    static class Physics
     {
-        Male,
-        Female
-    }
+        // статические поля
+        public static double PlanckLength = 1.616E-35;
+        public static double PlanckMass = 2.176E-8;
 
-    class Person
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public DateTime BirthDate { get; set; }
-    }
+        // нельзя объявлять экзмеплярные поля в статическом классе
+        // private double mass;
 
-    class Employee : Person
-    {
-        public string Position { get; set; }
-        public decimal Salary { get; set; }
-        public Manager Manager { get; set; }
-        protected List<string> Tasks { get; set; }
-
-        public Employee()
+        // статический метод
+        public static double CalculateSpeed(double distance, double time)
         {
-            Tasks = new List<string>();
-        }
-    }
-
-    class Worker : Employee
-    {
-    }
-
-    class Manager : Employee
-    {
-        private List<Employee> Subordinates { get; set; }
-        
-        public Manager()
-        {
-            Subordinates = new List<Employee>();
-        }
-
-        public void AddSubordinate(Employee subordinate)
-        {
-            Subordinates.Add(subordinate);
-        }
-
-        public void AssignTask(string task, Employee subordinate)
-        {
-            if (!Subordinates.Contains(subordinate))
-            {
-                return;
-            }
-
-            subordinate.AddTask(task);
+            return distance / time;
         }
     }
 
     class Program
     {
+        public static void Swap(ref int a, int b)
+        {
+            int temp = a;
+            a = b;
+            b = temp;
+        }
+
+
         static void Main(string[] args)
         {
-            var manager = new Manager()
-            {
-                FirstName = "Ivan",
-                BirthDate = DateTime.Now,
-                Position = "Big boss",
-                Salary = decimal.MaxValue
-            };
-            var subordinate = new Worker()
-            {
-                FirstName = "Andrey",
-                Position = "Janitor",
-                Salary = 1000m
-            };
-
-            manager.AddSubordinate(subordinate);
-            manager.AssignTask("Clean floor", subordinate);
         }
     }
 }
