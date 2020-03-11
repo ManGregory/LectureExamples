@@ -27,7 +27,7 @@ namespace MusicConverter
             // happy birthday
             music = "80;8G4;8G4;4A4;4G4;4C5;2H4;8G4;8G4;4A4;4G4;4D5;2C5;8G4;8G4;4G5;4E5;4C5;4H4;4A4;8F5;8F5;4E5;4C5;4D5;4C5;";
             // fur elise
-            //music = "80;8E5;8D#5;8E5;8D#5;8E5;8H4;8D5;8C5;4A4;8P;8C4;8E4;8A4;4H4;8P;8E4;8G#4;8H4;4C5;";
+            //music = "120;8E5;8D#5;8E5;8D#5;8E5;8H4;8D5;8C5;4A4;8P;8C4;8E4;8A4;4H4;8P;8E4;8G#4;8H4;4C5;";
 
             var musicParts = music.Split(";", StringSplitOptions.RemoveEmptyEntries);
             int bpm = int.Parse(musicParts[0]);

@@ -13,12 +13,74 @@ namespace IsValidDate
             Console.WriteLine(IsValidDate("29.02.1900"));
         }
 
+        public static bool IsValidDate(string date)
+        {
+            // разделяем дату на отдельные числа
+            var nums = date.Split(".", StringSplitOptions.RemoveEmptyEntries);
+            int day = int.Parse(nums[0]);
+            int month = int.Parse(nums[1]);
+            int year = int.Parse(nums[2]);
+
+            if (IsRightFormat(nums))
+            {
+                if (year > 0001 && day > 1 && day < DaysInMonth(month, year) && month > 1 && month < 12 && date != string.Empty)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        //метод проверяет высокостный ои год
+        static bool IsLeapYear(int year)
+        {
+            if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))
+            {
+                return true;
+            }
+            return false;
+        }
+
+
+        // метод возвращает количество дней в месяце
+        static int DaysInMonth(int month, int year)
+        {
+            int[] days31 = new int[] { 01, 03, 05, 07, 08, 10, 12 };
+            foreach (int numOfMonth in days31)
+            {
+                if (month == days31[numOfMonth])
+                {
+                    return 31;
+                }
+                else if (IsLeapYear(year) && month == 02)
+                {
+                    return 29;
+                }
+                else if (!IsLeapYear(year) && month == 02)
+                {
+                    return 28;
+                }
+            }
+            return 30;
+        }
+
+        // метод проверяет формат даты
+        static bool IsRightFormat(string[] nums)
+        {
+            if (nums[0].Length == 2 && nums[1].Length == 2 && nums[2].Length == 4)
+            {
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Функция определяет валидность введенной пользователем даты
         /// </summary>
         /// <param name="date">Дата в виде строке</param>
         /// <returns>True - если дата валидна, иначе false</returns>
-        public static bool IsValidDate(string date)
+        /*public static bool IsValidDate(string date)
         {
             if (string.IsNullOrWhiteSpace(date)) return false;
 
@@ -39,6 +101,6 @@ namespace IsValidDate
             int maxDaysInMonth = daysInMonths[months - 1] + (isLeapYear && months == 2 ? 1 : 0);
 
             return days <= maxDaysInMonth;
-        }
+        }*/
     }
 }
