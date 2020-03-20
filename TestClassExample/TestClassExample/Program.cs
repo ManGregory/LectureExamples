@@ -33,11 +33,20 @@ namespace TestClassExample
             }
         }
 
-        public bool IsAnswerCorrect(int num)
+        public virtual bool IsAnswerCorrect(string userAnswer)
         {
+            int num = int.Parse(userAnswer);
             if (num >= Answers.Count) return false;
 
             return Answers[num - 1].IsCorrect;
+        }
+    }
+
+    class MultiQuestion : Question
+    {
+        public override bool IsAnswerCorrect(string userAnswer)
+        {
+
         }
     }
 
@@ -57,7 +66,7 @@ namespace TestClassExample
                 var question = Questions[index];
                 question.Print(index + 1);
                 string userInput = Console.ReadLine();
-                if (!question.IsAnswerCorrect(int.Parse(userInput)))
+                if (!question.IsAnswerCorrect(userInput))
                 {
                     wrongQuestions.Add(question);
                 }
