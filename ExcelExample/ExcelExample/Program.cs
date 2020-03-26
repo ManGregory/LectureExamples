@@ -85,7 +85,7 @@ namespace ExcelExample
             }
         }
 
-        static List<string> evaluated = new List<string>();
+        static Dictionary<string, double> evaluated = new Dictionary<string, double>();
 
         private static void Calculate()
         {
@@ -105,14 +105,15 @@ namespace ExcelExample
         private static double CalcCell(int row, int col)
         {
             string item = Header[col] + row.ToString();
-            if (evaluated.Contains(item)) return 0;
+            if (evaluated.ContainsKey(item)) return evaluated[item];
 
-            evaluated.Add(item);
-            double val = calcTable[row, col];
             string formula = symbolTable[row, col];
-            if (string.IsNullOrEmpty(formula)) return val;
+            double val = string.IsNullOrEmpty(formula)
+                ? calcTable[row, col]
+                : CalcFormula(formula);
 
-            return CalcFormula(formula);
+            evaluated.Add(item, val);
+            return val;
         }
 
         private static double CalcFormula(string formula)
