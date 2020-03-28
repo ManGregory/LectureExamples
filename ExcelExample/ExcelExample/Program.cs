@@ -85,7 +85,14 @@ namespace ExcelExample
             }
         }
 
-        static Dictionary<string, double> evaluated = new Dictionary<string, double>();
+        enum State
+        {
+            NotVisited,
+            Visiting,
+            Visited
+        };
+
+        static Dictionary<string, State> evaluated = new Dictionary<string, State>();
 
         private static void Calculate()
         {
@@ -95,39 +102,55 @@ namespace ExcelExample
                 {
                     if (!string.IsNullOrEmpty(symbolTable[row, col]))
                     {
-                        evaluated.Clear();
-                        calcTable[row, col] = CalcCell(row, col);
+                        var treeState = new Dictionary<string, State>();
+                        double cellVal = CalcCell(row, col, treeState);
+                        if (treeState.ContainsKey("Circle"))
+                        {
+                            cellVal = 0;
+                        }
+                        calcTable[row, col] = cellVal;
                     }
                 }
             }
         }
 
-        private static double CalcCell(int row, int col)
+        private static double CalcCell(int row, int col, Dictionary<string, State> treeState)
         {
             string item = Header[col] + row.ToString();
-            if (evaluated.ContainsKey(item)) return evaluated[item];
+            if (treeState.ContainsKey(item) && treeState[item] == State.Visited)
+            {
+                return calcTable[row, col];
+            }
 
+            treeState.Add(item, State.Visiting);
             string formula = symbolTable[row, col];
             double val = string.IsNullOrEmpty(formula)
                 ? calcTable[row, col]
-                : CalcFormula(formula);
+                : CalcFormula(formula, treeState);
 
-            evaluated.Add(item, val);
+            treeState[item] = State.Visited;
             return val;
         }
 
-        private static double CalcFormula(string formula)
+        private static double CalcFormula(string formula, Dictionary<string, State> treeState)
         {
             if (formula.Length == 2)
             {
                 int formulaRow = int.Parse(formula[1].ToString()) - 1;
                 int formulaCol = GetColumnIndex(formula[0]);
 
-                return CalcCell(formulaRow, formulaCol);
+                var item = Header[formulaCol] + formulaRow.ToString();
+                if (treeState.ContainsKey(item) && treeState[item] == State.Visiting)
+                {
+                    treeState.Add("Circle", 0);
+                    return 0;
+                }
+
+                return CalcCell(formulaRow, formulaCol, treeState);
             }
             var operands = formula.Split(new string[] { "+", "-", "*", "/" }, StringSplitOptions.RemoveEmptyEntries);
-            double leftOperand = CalcFormula(operands[0]);
-            double righOperand = CalcFormula(operands[1]);
+            double leftOperand = CalcFormula(operands[0], treeState);
+            double righOperand = CalcFormula(operands[1], treeState);
             double result = operations[formula[2].ToString()](leftOperand, righOperand);
             return result;
         }
