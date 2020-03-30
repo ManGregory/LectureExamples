@@ -1,8 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ExcelExample
+namespace ExcelExampleStruct
 {
+    // состояние ячейки
+    enum State
+    {
+        NotCalculated, // еще не считалась
+        Calculating, // в процессе расчета
+        Calculated // посчитана
+    };
+
+    class Cell
+    {
+        public int Row { get; set; }
+        public int Col { get; set; }
+        public double Value { get; set; }
+        public string Formula { get; set; }
+        public bool IsCircleReference { get; set; }
+        public State CalcState { get; set; }
+
+        public string GetShowValue(bool isSymbol, int cellWidth, bool truncate = true)
+        {
+            if (IsCircleReference) return "!REF";
+
+            string value = isSymbol ? Formula : Value.ToString();
+            value = value ?? string.Empty;
+
+            if (truncate && value.Length + 1 > cellWidth)
+            {
+                value = $"{value.Substring(0, cellWidth - 4)}...";
+            }
+            return value;
+        }
+
+        public string GetKey()
+        {
+            return $"{Row}:{Col}";
+        }
+    }
+
     class Program
     {
         // кол-во строк
@@ -10,9 +47,7 @@ namespace ExcelExample
         // кол-во столбцов
         static int cols = 8;
         // таблица для хранения формул
-        static string[,] symbolTable = new string[rows, cols];
-        // таблица для хранения чисел
-        static double[,] calcTable = new double[rows, cols];
+        static Cell[,] cells = new Cell[rows, cols];
         // текущая строка
         static int focusedRow = 1;
         // текущая колонка
@@ -35,6 +70,7 @@ namespace ExcelExample
 
         static void Main(string[] args)
         {
+            InitTable();
             // отображать формулы
             bool symbol = false;
             while (true)
@@ -92,22 +128,14 @@ namespace ExcelExample
             bool isDigit = double.TryParse(userInput, out double value);
             if (isDigit)
             {
-                calcTable[focusedRow - 1, focusedCol - 1] = value;
-                symbolTable[focusedRow - 1, focusedCol - 1] = string.Empty;
+                cells[focusedRow - 1, focusedCol - 1].Value = value;
+                cells[focusedRow - 1, focusedCol - 1].Formula = string.Empty;
             }
             else
             {
-                symbolTable[focusedRow - 1, focusedCol - 1] = userInput;                
+                cells[focusedRow - 1, focusedCol - 1].Formula = userInput;
             }
         }
-
-        // состояние ячейки
-        enum State
-        {
-            NotCalculated, // еще не считалась
-            Calculating, // в процессе расчета
-            Calculated // посчитана
-        };
 
         // расчет всей таблицы
         private static void Calculate()
@@ -116,50 +144,35 @@ namespace ExcelExample
             {
                 for (int col = 0; col < cols; col++)
                 {
+                    var cell = cells[row, col];
                     // если есть формула
-                    if (!string.IsNullOrEmpty(symbolTable[row, col]))
+                    if (!string.IsNullOrEmpty(cell.Formula))
                     {
-                        // словарь с ячейками которые посчитаны или в процессе расчета
-                        var calcState = new Dictionary<string, State>();
-                        // расчет ячейки
-                        double cellVal = CalcCell(row, col, calcState);
-                        // если в словаре есть ключ - "Circle", значит обнаружена циклическая ссылка
-                        if (calcState.ContainsKey("Circle"))
-                        {
-                            // просто обнуляем значение
-                            cellVal = 0;
-                        }
-                        // записываем расчитаное значение
-                        calcTable[row, col] = cellVal;
+                        cell.CalcState = State.NotCalculated;
+                        CalcCell(cell);
                     }
                 }
             }
         }
 
         // расчет значения в указанной ячейки
-        private static double CalcCell(int row, int col, Dictionary<string, State> calcState)
+        private static void CalcCell(Cell cell)
         {
-            // название ячейки, ключ
-            string item = Header[col] + row.ToString();
             // если ячейка уже посчитана просто возвращаем значение
-            if (calcState.ContainsKey(item) && calcState[item] == State.Calculated)
-            {
-                return calcTable[row, col];
-            }
+            if (cell.CalcState == State.Calculated) return;
 
             // иначе пытаемся посчитать
-            calcState.Add(item, State.Calculating);
-            string formula = symbolTable[row, col];
+            cell.CalcState = State.Calculating;
             // если есть формула для ячейки, то считаем её, иначе просто возращаем значение из таблицы чисел
-            double val = string.IsNullOrEmpty(formula)
-                ? calcTable[row, col]
-                : CalcFormula(formula, calcState);
+            double val = string.IsNullOrEmpty(cell.Formula)
+                ? cell.Value
+                : CalcFormula(cell.Formula);
             // ячейка посчитана
-            calcState[item] = State.Calculated;
-            return val;
+            cell.CalcState = State.Calculated;
+            cell.Value = val;
         }
 
-        private static double CalcFormula(string formula, Dictionary<string, State> calcState)
+        private static double CalcFormula(string formula)
         {
             // формула просто значение другой ячейки - A1
             if (formula.Length == 2)
@@ -167,25 +180,26 @@ namespace ExcelExample
                 int formulaRow = int.Parse(formula[1].ToString()) - 1;
                 int formulaCol = GetColumnIndex(formula[0]);
 
-                var item = Header[formulaCol] + formulaRow.ToString();
+                Cell formulaCell = cells[formulaRow, formulaCol];
                 // если уже была попытка посчитать эту ячейку, значит у нас циклическая ссылка
-                if (calcState.ContainsKey(item) && calcState[item] == State.Calculating)
+                if (formulaCell.CalcState == State.Calculating)
                 {
-                    calcState.Add("Circle", 0);
+                    formulaCell.IsCircleReference = true;
                     return 0;
                 }
 
                 // вызываем расчет значения для ячейки (это может быть и формула и значение)
                 // вот здесь как раз взаимная рекурсия
-                return CalcCell(formulaRow, formulaCol, calcState);
+                CalcCell(formulaCell);
+                return formulaCell.Value;
             }
             // формула состоит из двух операндов: A1+B1
             var operands = formula.Split(new string[] { "+", "-", "*", "/" }, StringSplitOptions.RemoveEmptyEntries);
             // вот эти два последовательных вызова CalcFormula - это пример последовательной рекурсии
             // считаем левый операнд
-            double leftOperand = CalcFormula(operands[0], calcState);
+            double leftOperand = CalcFormula(operands[0]);
             // считаем правый операнд
-            double righOperand = CalcFormula(operands[1], calcState);
+            double righOperand = CalcFormula(operands[1]);
             // получаем результат для ячейки
             double result = operations[formula[2].ToString()](leftOperand, righOperand);
             return result;
@@ -196,15 +210,30 @@ namespace ExcelExample
             return Header.IndexOf(column.ToString().ToUpper());
         }
 
+        private static void InitTable()
+        {
+            for (int row = 0; row < rows; row++)
+            {
+                for (int col = 0; col < cols; col++)
+                {
+                    cells[row, col] = new Cell
+                    {
+                        Row = row,
+                        Col = col
+                    };
+                }
+            }
+        }
+
         private static void DrawTable(bool isSymbol)
         {
-            Console.Clear();            
+            Console.Clear();
 
             for (int row = 0; row <= rows; row++)
             {
                 if (row > 0)
                 {
-                    Console.Write($"{row, CellWidth}");
+                    Console.Write($"{row,CellWidth}");
                 }
                 for (int col = 0; col <= cols; col++)
                 {
@@ -215,30 +244,18 @@ namespace ExcelExample
                     }
                     if (row > 0 && col > 0)
                     {
-                        Console.Write($"{GetShowValue(row, col, isSymbol),CellWidth}");
+                        Console.Write($"{cells[row - 1, col - 1].GetShowValue(isSymbol, CellWidth),CellWidth}");
                     }
                     if (col > 0 && row == 0)
                     {
-                        Console.Write($"{Header[col - 1], CellWidth}");
+                        Console.Write($"{Header[col - 1],CellWidth}");
                     }
                 }
                 Console.WriteLine();
             }
             Console.WriteLine();
-            Console.WriteLine($"{Header[focusedCol - 1]}{focusedRow}: {GetShowValue(focusedRow, focusedCol, isSymbol, false)}");
+            Console.WriteLine($"{Header[focusedCol - 1]}{focusedRow}: {cells[focusedRow - 1, focusedCol - 1].GetShowValue(isSymbol, CellWidth, false)}");
             Console.SetCursorPosition(focusedCol * CellWidth + CellWidth - 1, focusedRow);
-        }
-
-        private static string GetShowValue(int row, int col, bool isSymbol, bool truncate = true)
-        {
-            string value = isSymbol ? symbolTable[row - 1, col - 1] : calcTable[row - 1, col - 1].ToString();
-            value = value ?? string.Empty;
-
-            if (truncate && value.Length + 1 > CellWidth)
-            {
-                value = $"{value.Substring(0, CellWidth - 4)}...";
-            }
-            return value;
         }
     }
 }
